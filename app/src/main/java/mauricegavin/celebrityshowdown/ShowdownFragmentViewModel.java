@@ -4,93 +4,66 @@ package mauricegavin.celebrityshowdown;
  * Created by maurice on 08/11/15.
  */
 
-import android.app.DatePickerDialog;
 import android.app.Fragment;
-import android.content.Intent;
-import android.content.res.Resources;
-import android.databinding.BaseObservable;
 import android.databinding.Bindable;
-import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
-import android.databinding.ObservableLong;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.View;
-
-import org.apache.commons.io.IOUtils;
-
-import java.util.Calendar;
-import java.util.List;
 
 import mauricegavin.celebrityshowdown.api.ApiServiceBuilder;
 import mauricegavin.celebrityshowdown.api.retrofit.ApiService;
+import mauricegavin.celebrityshowdown.model.Cast;
 import mauricegavin.celebrityshowdown.ui.ShowdownFragment;
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
+import mauricegavin.celebrityshowdown.viewModel.AbstractViewModel;
 import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by maurice on 11/09/15.
  */
-public class ShowdownFragmentViewModel {
+public class ShowdownFragmentViewModel extends AbstractViewModel {
 
     private final String TAG = ShowdownFragmentViewModel.class.getSimpleName();
 
     private ShowdownFragment mListener;
-    private Resources resources;
-
     private ApiService api;
 
     // Fields of this type should be declared final because bindings only detect changes in the field's value, not of the field itself.
     @Bindable
-    public final ObservableBoolean loginMode = new ObservableBoolean();
-
+    public final ObservableField<Cast> person1 = new ObservableField<>();
     @Bindable
-    private ObservableField<String> progressTitle = new ObservableField<String>(null);
-    private ObservableField<String> progressMessage = new ObservableField<String>(null);
+    public final ObservableField<Cast> person2 = new ObservableField<>();
 
     /**
      * Create a new instance of the ReportsViewModel
      *
      * @param fragment
      */
-    public ShowdownFragmentViewModel(Fragment fragment, Resources resources) {
+    public ShowdownFragmentViewModel(Fragment fragment, Cast person1, Cast person2) {
         try {
             mListener = (ShowdownFragment) fragment;
-            this.resources = resources;
+            this.person1.set(person1);
+            this.person2.set(person2);
         } catch (ClassCastException e) {
             throw new ClassCastException(fragment.toString()
-                    + " must implement LoginViewModelListener");
+                    + " must implement ShowdownFragmentViewModelListener");
         }
 
         // Networking initialisation
         api = new ApiServiceBuilder(fragment.getActivity())
-                .setAuthToken("7vzn9CmuqjX3uva5ektH") //todo set this to null)
+                .setAuthToken(ApiService.API_KEY)
                 .create();
-
-        loginMode.set(true);
     }
 
     /**
      * Initialise the ViewModel's data from local memory
      */
+    @Override
     protected void subscribeToDataStoreInternal(CompositeSubscription compositeSubscription) {
         Log.v(TAG, "subscribeToDataStoreInternal");
-
-/*        databaseManager.loadPatientCase("266")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .filter(patientCase -> patientCase != null)
-                .subscribe(patientCase -> this.addPatientCase(patientCase));*/
     }
 
+    @Override
     protected void subscribeToDataStoreExternal(CompositeSubscription compositeSubscription) {
         Log.v(TAG, "subscribeToDataStoreExternal");
-
-
     }
 
     /**
@@ -108,17 +81,9 @@ public class ShowdownFragmentViewModel {
      * It allows the ViewModel to invoke methods in the View.
      */
     public interface ShowdownFragmentViewModelListener {
-        public void showDialog(MaterialDialog.Builder dialogBuilder);
-
-        public void login();
-
-        public void modeChanged(boolean loginMode);
 
         public void finish();
 
-        public void showProgress();
-
-        public void hideProgress();
     }
 
 }

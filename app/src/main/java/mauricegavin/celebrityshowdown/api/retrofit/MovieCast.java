@@ -5,5 +5,5 @@ import java.util.List;
 import mauricegavin.celebrityshowdown.model.Cast;
 
 public class MovieCast {
-    List<Cast> cast;
+    public List<Cast> cast;
 }

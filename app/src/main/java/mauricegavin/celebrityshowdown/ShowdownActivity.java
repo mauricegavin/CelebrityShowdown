@@ -2,11 +2,9 @@ package mauricegavin.celebrityshowdown;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -15,12 +13,11 @@ import mauricegavin.celebrityshowdown.api.retrofit.ApiService;
 import mauricegavin.celebrityshowdown.api.retrofit.PopularMovies;
 import mauricegavin.celebrityshowdown.model.Cast;
 import mauricegavin.celebrityshowdown.ui.ShowdownFragment;
-import rx.Observable;
-import rx.Subscriber;
+import mauricegavin.celebrityshowdown.ui.ShowdownFragment.ShowdownFragmentListener;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class ShowdownActivity extends AppCompatActivity {
+public class ShowdownActivity extends AppCompatActivity implements ShowdownFragmentListener {
 
     private String TAG = ShowdownActivity.class.getName();
 
@@ -41,41 +38,20 @@ public class ShowdownActivity extends AppCompatActivity {
                 .create();
 
         api.getPopularMovies()
+                .doOnNext(popularMovies -> movies = popularMovies)
+                .flatMap(popularMovies -> api.getMovieCast(popularMovies.results.get(0).getId()))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<PopularMovies>() {
-                    @Override
-                    public void onCompleted() {
-                        showComparisonActivity();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onNext(PopularMovies popularMovies) {
-                        movies = popularMovies;
-                    }
-                });
+                .subscribe(movieCast -> showComparisonFragment(movieCast.cast.get(0), movieCast.cast.get(1)));
     }
 
+    //todo this would be a good place to use Kotlin
     public void showComparisonFragment(Cast person1, Cast person2) {
-        if(movies.results.size() > 0) {
-            Log.i(TAG, "Show ComparisonActivity");
-            Intent intent = new Intent(this, ComparisonActivity.class);
-            intent.putExtra("movie", movies.results.get(0));
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); //pop off all other activities
-            startActivity(intent);
-
-            Fragment fragment = ShowdownFragment.newInstance();
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
-            transaction.replace(R.id.container, tsAndCs);
-            transaction.addToBackStack(null);
-            transaction.commit();
-        }
-
+        Fragment fragment = ShowdownFragment.newInstance(person1, person2);
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
     @Override
@@ -100,10 +76,5 @@ public class ShowdownActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void initialiseDataSet() {
-
-        Observable<PopularMovies> movies = api.getPopularMovies();
-
-    }
 
 }

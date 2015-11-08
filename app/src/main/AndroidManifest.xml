@@ -19,12 +19,6 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ComparisonActivity"
-            android:label="@string/title_activity_comparison_activity"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".ShowdownActivity">
-        </activity>
 
     </application>
 

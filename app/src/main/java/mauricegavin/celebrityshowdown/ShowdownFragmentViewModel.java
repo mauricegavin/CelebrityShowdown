@@ -12,8 +12,11 @@ import android.util.Log;
 import mauricegavin.celebrityshowdown.api.ApiServiceBuilder;
 import mauricegavin.celebrityshowdown.api.retrofit.ApiService;
 import mauricegavin.celebrityshowdown.model.Cast;
+import mauricegavin.celebrityshowdown.model.Movie;
 import mauricegavin.celebrityshowdown.ui.ShowdownFragment;
 import mauricegavin.celebrityshowdown.viewModel.AbstractViewModel;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -27,21 +30,25 @@ public class ShowdownFragmentViewModel extends AbstractViewModel {
     private ApiService api;
 
     // Fields of this type should be declared final because bindings only detect changes in the field's value, not of the field itself.
+    private Movie movie1, movie2;
+
     @Bindable
     public final ObservableField<Cast> person1 = new ObservableField<>();
     @Bindable
     public final ObservableField<Cast> person2 = new ObservableField<>();
+    @Bindable
+    public final ObservableField<Cast> moviePoster = new ObservableField<>();
 
     /**
      * Create a new instance of the ReportsViewModel
      *
      * @param fragment
      */
-    public ShowdownFragmentViewModel(Fragment fragment, Cast person1, Cast person2) {
+    public ShowdownFragmentViewModel(Fragment fragment, Movie movie1, Movie movie2) {
         try {
             mListener = (ShowdownFragment) fragment;
-            this.person1.set(person1);
-            this.person2.set(person2);
+            this.movie1 = movie1;
+            this.movie2 = movie2;
         } catch (ClassCastException e) {
             throw new ClassCastException(fragment.toString()
                     + " must implement ShowdownFragmentViewModelListener");
@@ -51,7 +58,18 @@ public class ShowdownFragmentViewModel extends AbstractViewModel {
         api = new ApiServiceBuilder(fragment.getActivity())
                 .setAuthToken(ApiService.API_KEY)
                 .create();
-    }
+
+        api.getMovieCast(movie1.getId())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(movieCast -> person1.set(movieCast.cast.get(0)));
+
+        api.getMovieCast(movie2.getId())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(movieCast -> person2.set(movieCast.cast.get(0)));
+
+        }
 
     /**
      * Initialise the ViewModel's data from local memory

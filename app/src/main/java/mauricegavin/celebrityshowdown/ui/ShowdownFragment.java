@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import mauricegavin.celebrityshowdown.R;
 import mauricegavin.celebrityshowdown.ShowdownFragmentViewModel;
 import mauricegavin.celebrityshowdown.databinding.FragmentShowdownBinding;
-import mauricegavin.celebrityshowdown.model.Cast;
+import mauricegavin.celebrityshowdown.model.Movie;
 
 /**
  * Created by maurice on 08/11/15.
@@ -24,14 +24,14 @@ public class ShowdownFragment extends Fragment implements ShowdownFragmentViewMo
     private ShowdownFragmentViewModel viewModel;
     private ShowdownFragmentListener mListener;
 
-    private Cast person1;
-    private Cast person2;
+    private Movie movie1;
+    private Movie movie2;
 
-    public static ShowdownFragment newInstance(Cast person1, Cast person2) {
+    public static ShowdownFragment newInstance(Movie movie1, Movie movie2) {
         ShowdownFragment fragment = new ShowdownFragment();
         Bundle args = new Bundle();
-        args.putParcelable("person1", person1);
-        args.putParcelable("person2", person2);
+        args.putParcelable("movie1", movie1);
+        args.putParcelable("movie2", movie2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -44,8 +44,8 @@ public class ShowdownFragment extends Fragment implements ShowdownFragmentViewMo
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            this.person1 = getArguments().getParcelable("person1");
-            this.person2 = getArguments().getParcelable("person2");
+            this.movie1 = getArguments().getParcelable("movie1");
+            this.movie2 = getArguments().getParcelable("movie2");
         }
     }
 
@@ -55,7 +55,7 @@ public class ShowdownFragment extends Fragment implements ShowdownFragmentViewMo
 
         // The ViewModel needs to be created first because the view will rely on it to resolve its
         // content
-        viewModel = new ShowdownFragmentViewModel(this, person1, person2);
+        viewModel = new ShowdownFragmentViewModel(this, movie1, movie2);
         viewModel.setListener(this);
 
         // Setup of the View

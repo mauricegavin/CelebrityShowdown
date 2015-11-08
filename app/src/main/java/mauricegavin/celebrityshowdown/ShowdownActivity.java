@@ -11,7 +11,7 @@ import android.view.MenuItem;
 import mauricegavin.celebrityshowdown.api.ApiServiceBuilder;
 import mauricegavin.celebrityshowdown.api.retrofit.ApiService;
 import mauricegavin.celebrityshowdown.api.retrofit.PopularMovies;
-import mauricegavin.celebrityshowdown.model.Cast;
+import mauricegavin.celebrityshowdown.model.Movie;
 import mauricegavin.celebrityshowdown.ui.ShowdownFragment;
 import mauricegavin.celebrityshowdown.ui.ShowdownFragment.ShowdownFragmentListener;
 import rx.android.schedulers.AndroidSchedulers;
@@ -39,15 +39,14 @@ public class ShowdownActivity extends AppCompatActivity implements ShowdownFragm
 
         api.getPopularMovies()
                 .doOnNext(popularMovies -> movies = popularMovies)
-                .flatMap(popularMovies -> api.getMovieCast(popularMovies.results.get(0).getId()))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(movieCast -> showComparisonFragment(movieCast.cast.get(0), movieCast.cast.get(1)));
+                .subscribe(movieCast -> showComparisonFragment(movies.results.get(0), movies.results.get(1)));
     }
 
     //todo this would be a good place to use Kotlin
-    public void showComparisonFragment(Cast person1, Cast person2) {
-        Fragment fragment = ShowdownFragment.newInstance(person1, person2);
+    public void showComparisonFragment(Movie movie1, Movie movie2) {
+        Fragment fragment = ShowdownFragment.newInstance(movie1, movie2);
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, fragment);
         transaction.addToBackStack(null);

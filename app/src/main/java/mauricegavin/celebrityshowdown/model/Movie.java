@@ -1,8 +1,11 @@
 package mauricegavin.celebrityshowdown.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 
-public class Movie implements Serializable, Comparable<Movie> {
+public class Movie implements Comparable<Movie>, Parcelable {
 	
 	public interface MovieDetailsListener {
 		void onMovieDetailsReceived(MovieDetails details);
@@ -81,4 +84,43 @@ public class Movie implements Serializable, Comparable<Movie> {
 //		return Uri.parse(MoviesApiRetrofitImpl.IMAGE_BASE_URL+ poster_path);
 //	}
 
+
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeString(this.title);
+		dest.writeDouble(this.popularity);
+		dest.writeString(this.poster_path);
+		dest.writeString(this.release_date);
+		dest.writeDouble(this.vote_average);
+		dest.writeLong(this.id);
+		dest.writeSerializable(this.mDetails);
+	}
+
+	public Movie() {
+	}
+
+	protected Movie(Parcel in) {
+		this.title = in.readString();
+		this.popularity = in.readDouble();
+		this.poster_path = in.readString();
+		this.release_date = in.readString();
+		this.vote_average = in.readDouble();
+		this.id = in.readLong();
+		this.mDetails = (MovieDetails) in.readSerializable();
+	}
+
+	public static final Creator<Movie> CREATOR = new Creator<Movie>() {
+		public Movie createFromParcel(Parcel source) {
+			return new Movie(source);
+		}
+
+		public Movie[] newArray(int size) {
+			return new Movie[size];
+		}
+	};
 }

@@ -2,8 +2,12 @@ package mauricegavin.celebrityshowdown.model;
 
 public class Cast {
 
+    public String id;
 	public String character;
+    public String cast_id;
 	public String name;
+    public int order ;
+    public String profile_path;
 
 	/*
 	 * Sample response

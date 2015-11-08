@@ -1,8 +1,8 @@
 package mauricegavin.celebrityshowdown.api.retrofit;
 
-import com.plattysoft.movieapp.model.Cast;
-
 import java.util.List;
+
+import mauricegavin.celebrityshowdown.model.Cast;
 
 public class MovieCast {
     List<Cast> cast;

@@ -67,6 +67,7 @@ public class ApiServiceBuilder {
         builder.setRequestInterceptor(new RequestInterceptor() {
             @Override
             public void intercept(RequestFacade request) {
+                request.addQueryParam("api_key", authToken);
                 request.addHeader("User-Agent", "(Linux; Android " + android.os.Build.VERSION.SDK_INT + "; " +
                         "Locale " + Locale.getDefault() + "; " +
                         "Manufacturer " + Build.MANUFACTURER + "; " +

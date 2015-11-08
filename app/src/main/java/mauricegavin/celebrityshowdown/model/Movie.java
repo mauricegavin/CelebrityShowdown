@@ -1,10 +1,5 @@
 package mauricegavin.celebrityshowdown.model;
 
-import android.net.Uri;
-
-import com.plattysoft.movieapp.api.MoviesApiFactory;
-import com.plattysoft.movieapp.api.retrofit.MoviesApiRetrofitImpl;
-
 import java.io.Serializable;
 
 public class Movie implements Serializable, Comparable<Movie> {
@@ -82,8 +77,8 @@ public class Movie implements Serializable, Comparable<Movie> {
 		return 0;
 	}
 
-	public Uri getThumbnailUrl() {
-		return Uri.parse(MoviesApiRetrofitImpl.IMAGE_BASE_URL+ poster_path);
-	}
+//	public Uri getThumbnailUrl() {
+//		return Uri.parse(MoviesApiRetrofitImpl.IMAGE_BASE_URL+ poster_path);
+//	}
 
 }
